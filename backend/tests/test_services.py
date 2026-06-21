@@ -196,8 +196,9 @@ class TestFirestoreServiceNeverRaises:
 
     async def test_get_entries_success(self) -> None:
         """Should stream documents and convert timestamps to ISO strings."""
+        from datetime import UTC, datetime
+
         from app.services.firestore_service import get_entries
-        from datetime import datetime, UTC
 
         mock_client = MagicMock()
         mock_collection = MagicMock()
@@ -226,7 +227,7 @@ class TestFirestoreServiceNeverRaises:
         mock_doc.to_dict.return_value = {
             "device_id": "test-001",
             "total_kg": 500.0,
-            "created_at": datetime(2026, 6, 21, 12, 0, 0, tzinfo=UTC)
+            "created_at": datetime(2026, 6, 21, 12, 0, 0, tzinfo=UTC),
         }
         mock_query.stream.return_value = AsyncMockIterator([mock_doc])
 
@@ -258,4 +259,3 @@ class TestFirestoreServiceNeverRaises:
 
             entries = await get_entries("test-001")
             assert entries == []
-
