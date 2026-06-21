@@ -10,7 +10,7 @@ import logging
 from datetime import UTC, datetime
 from typing import Any
 
-from google.cloud import firestore
+from google.cloud import firestore  # type: ignore[attr-defined]
 
 from app.core.config import get_settings
 
@@ -52,7 +52,7 @@ async def save_entry(device_id: str, result: dict[str, Any]) -> str | None:
             "created_at": datetime.now(tz=UTC),
         }
         doc_ref = await collection.add(doc_data)
-        doc_id = doc_ref[1].id
+        doc_id = str(doc_ref[1].id)
         logger.info("Saved entry %s for device %s", doc_id, device_id)
         return doc_id
     except Exception:

@@ -12,7 +12,7 @@ from app.carbon.calculator import calculate_footprint, get_rule_based_insights
 from app.core.config import get_settings
 from app.core.rate_limit import limiter
 from app.models.carbon import CarbonInput
-from app.models.insights import InsightsResponse
+from app.models.insights import Insight, InsightsResponse
 from app.services.gemini_service import GeminiUnavailableError, get_gemini_insights
 
 logger = logging.getLogger(__name__)
@@ -57,9 +57,8 @@ async def get_insights(request: Request, data: CarbonInput) -> InsightsResponse:
 
     return InsightsResponse(
         insights=[
-            {"category": i["category"], "tip": i["tip"], "severity": i["severity"]}
-            for i in insights
-        ],  # type: ignore[arg-type]
+            Insight(category=i["category"], tip=i["tip"], severity=i["severity"]) for i in insights
+        ],
         source=source,
         device_id=data.device_id,
     )

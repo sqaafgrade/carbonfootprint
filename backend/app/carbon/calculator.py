@@ -65,14 +65,16 @@ def calculate_footprint(inputs: dict[str, object]) -> dict[str, object]:
         total_kg, breakdown (transport/home/diet/consumption),
         vs_global_average_pct, vs_paris_target_pct, ranked_categories.
     """
+    from typing import cast
+
     transport_kg = _calculate_transport(
         mode=str(inputs.get("transport_mode", "car_petrol")),
-        distance_km=float(inputs.get("distance_km", 0)),
-        trips_per_year=int(inputs.get("trips_per_year", 0)),
+        distance_km=cast(float, inputs.get("distance_km", 0.0)),
+        trips_per_year=cast(int, inputs.get("trips_per_year", 0)),
     )
     home_kg = _calculate_home(
-        electricity_kwh_monthly=float(inputs.get("electricity_kwh", 0)),
-        gas_kwh_monthly=float(inputs.get("gas_kwh", 0)),
+        electricity_kwh_monthly=cast(float, inputs.get("electricity_kwh", 0.0)),
+        gas_kwh_monthly=cast(float, inputs.get("gas_kwh", 0.0)),
     )
     diet_kg = _calculate_diet(str(inputs.get("diet_type", "meat_medium")))
     consumption_kg = _calculate_consumption(str(inputs.get("consumption_level", "medium")))

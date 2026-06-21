@@ -11,7 +11,7 @@ import json
 import logging
 from typing import Any
 
-from google.cloud import pubsub_v1
+from google.cloud import pubsub_v1  # type: ignore[attr-defined]
 
 from app.core.config import get_settings
 
