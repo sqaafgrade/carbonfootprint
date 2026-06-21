@@ -9,7 +9,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Stage 2: Python runtime
-FROM python:3.11-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 # Security: create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
