@@ -128,7 +128,7 @@ class TestCalculateRoute:
         valid_carbon_input: dict,
     ) -> None:
         """Should return insights with source 'gemini' when Gemini is enabled and succeeds."""
-        from unittest.mock import patch, AsyncMock
+        from unittest.mock import AsyncMock, patch
         mock_insights = [
             {"category": "transport", "tip": "Ride a bike", "severity": "high"},
             {"category": "home", "tip": "Turn off lights", "severity": "low"},
@@ -154,7 +154,8 @@ class TestCalculateRoute:
         valid_carbon_input: dict,
     ) -> None:
         """Should fallback to rules when Gemini is enabled but fails."""
-        from unittest.mock import patch, AsyncMock
+        from unittest.mock import AsyncMock, patch
+
         from app.services.gemini_service import GeminiUnavailableError
         with (
             patch("app.routes.calculate.get_settings") as mock_settings,
@@ -192,7 +193,7 @@ class TestInsightsRoute:
         valid_carbon_input: dict,
     ) -> None:
         """Should return Gemini insights when enabled and succeeds."""
-        from unittest.mock import patch, AsyncMock
+        from unittest.mock import AsyncMock, patch
         mock_insights = [
             {"category": "transport", "tip": "Ride a bike", "severity": "high"},
             {"category": "home", "tip": "Turn off lights", "severity": "low"},
@@ -218,7 +219,8 @@ class TestInsightsRoute:
         valid_carbon_input: dict,
     ) -> None:
         """Should fallback to rule-based insights when Gemini is enabled but fails."""
-        from unittest.mock import patch, AsyncMock
+        from unittest.mock import AsyncMock, patch
+
         from app.services.gemini_service import GeminiUnavailableError
         with (
             patch("app.routes.insights.get_settings") as mock_settings,
@@ -259,10 +261,11 @@ class TestSpaServing:
 
     async def test_serve_spa_index_when_not_found(self, tmp_path) -> None:
         """Should fall back to index.html if the requested file does not exist."""
-        from pathlib import Path
         from unittest.mock import patch
+
+        from httpx import ASGITransport, AsyncClient
+
         from app.main import create_app
-        from httpx import AsyncClient, ASGITransport
 
         # Create dummy index.html in tmp_path
         (tmp_path / "index.html").write_text("INDEX_HTML_CONTENT")
@@ -279,10 +282,11 @@ class TestSpaServing:
 
     async def test_serve_spa_file_exists(self, tmp_path) -> None:
         """Should return the actual file if it exists in the static directory."""
-        from pathlib import Path
         from unittest.mock import patch
+
+        from httpx import ASGITransport, AsyncClient
+
         from app.main import create_app
-        from httpx import AsyncClient, ASGITransport
 
         # Create dummy file in tmp_path
         (tmp_path / "test.txt").write_text("FILE_CONTENT")
@@ -299,15 +303,15 @@ class TestSpaServing:
 
     async def test_api_only_mode_if_dir_missing(self, tmp_path) -> None:
         """Should log warning and skip SPA mounting if static dir does not exist."""
-        from pathlib import Path
         from unittest.mock import patch
+
         from app.main import create_app
 
         non_existent_path = tmp_path / "missing_dir"
 
         with patch("app.main.STATIC_DIR", non_existent_path):
             test_app = create_app()
-            from httpx import AsyncClient, ASGITransport
+            from httpx import ASGITransport, AsyncClient
             transport = ASGITransport(app=test_app)
             async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get("/some-random-route")

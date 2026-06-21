@@ -144,20 +144,19 @@ async def get_gemini_insights(
             loop.run_in_executor(_executor, model.generate_content, prompt),
             timeout=settings.gemini_timeout_seconds,
         )
-        if hasattr(response, "text"):
-            text_content = response.text
-        elif hasattr(response, "__iter__") and not isinstance(response, (str, bytes)):
-            text_content = "".join(
-                chunk.text for chunk in cast(Any, response) if hasattr(chunk, "text")
-            )
-        else:
-            raise GeminiUnavailableError("Unsupported Gemini response type")
-        return _parse_gemini_response(text_content)
-    except GeminiUnavailableError:
-        raise
     except TimeoutError as exc:
         logger.warning("Gemini request timed out after %.1fs", settings.gemini_timeout_seconds)
         raise GeminiUnavailableError("Gemini request timed out") from exc
     except Exception as exc:
         logger.warning("Gemini service error: %s", exc)
         raise GeminiUnavailableError(f"Gemini service error: {exc}") from exc
+
+    if hasattr(response, "text"):
+        text_content = response.text
+    elif hasattr(response, "__iter__") and not isinstance(response, str | bytes):
+        text_content = "".join(
+            chunk.text for chunk in cast(Any, response) if hasattr(chunk, "text")
+        )
+    else:
+        raise GeminiUnavailableError("Unsupported Gemini response type")
+    return _parse_gemini_response(text_content)
