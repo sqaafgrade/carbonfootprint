@@ -272,4 +272,3 @@ def test_invalid_transport_mode_returns_zero() -> None:
     }
     result = calculate_footprint(inputs)
     assert result["breakdown"]["transport"] == 0.0
-

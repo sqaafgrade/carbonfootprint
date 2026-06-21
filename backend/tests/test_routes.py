@@ -48,7 +48,11 @@ class TestCalculateRoute:
         valid_carbon_input: dict,  # type: ignore[type-arg]
     ) -> None:
         """Valid input should return 200 with complete result."""
-        response = await client.post("/api/calculate", json=valid_carbon_input, headers={"X-Forwarded-For": "1.2.3.4, 5.6.7.8"})
+        response = await client.post(
+            "/api/calculate",
+            json=valid_carbon_input,
+            headers={"X-Forwarded-For": "1.2.3.4, 5.6.7.8"},
+        )
         assert response.status_code == 200
         data = response.json()
         assert "total_kg" in data
@@ -129,6 +133,7 @@ class TestCalculateRoute:
     ) -> None:
         """Should return insights with source 'gemini' when Gemini is enabled and succeeds."""
         from unittest.mock import AsyncMock, patch
+
         mock_insights = [
             {"category": "transport", "tip": "Ride a bike", "severity": "high"},
             {"category": "home", "tip": "Turn off lights", "severity": "low"},
@@ -136,7 +141,9 @@ class TestCalculateRoute:
         ]
         with (
             patch("app.routes.calculate.get_settings") as mock_settings,
-            patch("app.routes.calculate.get_gemini_insights", new_callable=AsyncMock) as mock_get_gemini,
+            patch(
+                "app.routes.calculate.get_gemini_insights", new_callable=AsyncMock
+            ) as mock_get_gemini,
         ):
             mock_settings.return_value.use_gemini = True
             mock_settings.return_value.rate_limit_per_minute = 100
@@ -157,9 +164,12 @@ class TestCalculateRoute:
         from unittest.mock import AsyncMock, patch
 
         from app.services.gemini_service import GeminiUnavailableError
+
         with (
             patch("app.routes.calculate.get_settings") as mock_settings,
-            patch("app.routes.calculate.get_gemini_insights", new_callable=AsyncMock) as mock_get_gemini,
+            patch(
+                "app.routes.calculate.get_gemini_insights", new_callable=AsyncMock
+            ) as mock_get_gemini,
         ):
             mock_settings.return_value.use_gemini = True
             mock_settings.return_value.rate_limit_per_minute = 100
@@ -194,6 +204,7 @@ class TestInsightsRoute:
     ) -> None:
         """Should return Gemini insights when enabled and succeeds."""
         from unittest.mock import AsyncMock, patch
+
         mock_insights = [
             {"category": "transport", "tip": "Ride a bike", "severity": "high"},
             {"category": "home", "tip": "Turn off lights", "severity": "low"},
@@ -201,7 +212,9 @@ class TestInsightsRoute:
         ]
         with (
             patch("app.routes.insights.get_settings") as mock_settings,
-            patch("app.routes.insights.get_gemini_insights", new_callable=AsyncMock) as mock_get_gemini,
+            patch(
+                "app.routes.insights.get_gemini_insights", new_callable=AsyncMock
+            ) as mock_get_gemini,
         ):
             mock_settings.return_value.use_gemini = True
             mock_settings.return_value.rate_limit_per_minute = 100
@@ -222,9 +235,12 @@ class TestInsightsRoute:
         from unittest.mock import AsyncMock, patch
 
         from app.services.gemini_service import GeminiUnavailableError
+
         with (
             patch("app.routes.insights.get_settings") as mock_settings,
-            patch("app.routes.insights.get_gemini_insights", new_callable=AsyncMock) as mock_get_gemini,
+            patch(
+                "app.routes.insights.get_gemini_insights", new_callable=AsyncMock
+            ) as mock_get_gemini,
         ):
             mock_settings.return_value.use_gemini = True
             mock_settings.return_value.rate_limit_per_minute = 100
@@ -312,8 +328,8 @@ class TestSpaServing:
         with patch("app.main.STATIC_DIR", non_existent_path):
             test_app = create_app()
             from httpx import ASGITransport, AsyncClient
+
             transport = ASGITransport(app=test_app)
             async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get("/some-random-route")
                 assert response.status_code == 404
-

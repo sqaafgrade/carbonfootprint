@@ -191,6 +191,7 @@ class TestGeminiFallback:
     def test_get_model_initialization(self) -> None:
         """Should call vertexai.init and GenerativeModel constructor on first lazy get."""
         import app.services.gemini_service as svc
+
         svc._model_instance = None
         with (
             patch("app.services.gemini_service.vertexai.init") as mock_init,
@@ -204,4 +205,3 @@ class TestGeminiFallback:
             mock_init.assert_called_once_with(project="test-project", location="us-central1")
             mock_model_class.assert_called_once_with("gemini-1.5-flash")
             assert model == mock_model_class.return_value
-
