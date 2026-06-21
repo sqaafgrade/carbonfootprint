@@ -9,7 +9,7 @@ httpx==0.28.1
 respx==0.21.1
 
 # Linting & formatting
-ruff==0.8.4
+ruff==0.15.18
 mypy==1.14.1
 bandit==1.8.2
 
