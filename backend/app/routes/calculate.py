@@ -7,6 +7,7 @@ for BigQuery logging and Pub/Sub publishing.
 
 import asyncio
 import logging
+from typing import Any, cast
 
 from fastapi import APIRouter, Request
 
@@ -51,33 +52,30 @@ async def calculate(request: Request, data: CarbonInput) -> CarbonResult:
     if settings.use_gemini:
         try:
             insights = await get_gemini_insights(
-                breakdown=result["breakdown"],  # type: ignore[arg-type]
-                total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
+                breakdown=cast(dict[str, float], result["breakdown"]),
+                total_kg=cast(float, result["total_kg"]),
                 device_id=data.device_id,
             )
             source = "gemini"
         except GeminiUnavailableError as exc:
             logger.info("Gemini unavailable, using rule-based fallback: %s", exc)
             insights = get_rule_based_insights(
-                result["ranked_categories"],  # type: ignore[arg-type]
-                result["breakdown"],  # type: ignore[arg-type]
+                cast(list[dict[str, Any]], result["ranked_categories"]),
+                cast(dict[str, float], result["breakdown"]),
             )
     else:
         insights = get_rule_based_insights(
-            result["ranked_categories"],  # type: ignore[arg-type]
-            result["breakdown"],  # type: ignore[arg-type]
+            cast(list[dict[str, Any]], result["ranked_categories"]),
+            cast(dict[str, float], result["breakdown"]),
         )
 
-    result["insights"] = insights
-    result["source"] = source
-
     # Fire-and-forget async tasks for analytics (never block the response)
-    breakdown = result["breakdown"]
+    breakdown = cast(dict[str, float], result["breakdown"])
     task1 = asyncio.create_task(
         log_calculation_event(
             device_id=data.device_id,
-            total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
-            breakdown=breakdown,  # type: ignore[arg-type]
+            total_kg=cast(float, result["total_kg"]),
+            breakdown=breakdown,
             source=source,
         )
     )
@@ -87,11 +85,19 @@ async def calculate(request: Request, data: CarbonInput) -> CarbonResult:
     task2 = asyncio.create_task(
         publish_calculation_event(
             device_id=data.device_id,
-            total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
-            breakdown=breakdown,  # type: ignore[arg-type]
+            total_kg=cast(float, result["total_kg"]),
+            breakdown=breakdown,
         )
     )
     _BACKGROUND_TASKS.add(task2)
     task2.add_done_callback(_BACKGROUND_TASKS.discard)
 
-    return CarbonResult(**result)  # type: ignore[arg-type]
+    return CarbonResult(
+        total_kg=cast(float, result["total_kg"]),
+        breakdown=cast(Any, result["breakdown"]),
+        vs_global_average_pct=cast(float, result["vs_global_average_pct"]),
+        vs_paris_target_pct=cast(float, result["vs_paris_target_pct"]),
+        ranked_categories=cast(Any, result["ranked_categories"]),
+        insights=insights,
+        source=cast(Any, source),
+    )

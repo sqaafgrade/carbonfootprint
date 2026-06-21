@@ -5,6 +5,7 @@ fallback to deterministic rule-based insights.
 """
 
 import logging
+from typing import Any, cast
 
 from fastapi import APIRouter, Request
 
@@ -38,21 +39,21 @@ async def get_insights(request: Request, data: CarbonInput) -> InsightsResponse:
     if settings.use_gemini:
         try:
             insights = await get_gemini_insights(
-                breakdown=result["breakdown"],  # type: ignore[arg-type]
-                total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
+                breakdown=cast(dict[str, float], result["breakdown"]),
+                total_kg=cast(float, result["total_kg"]),
                 device_id=data.device_id,
             )
             source = "gemini"
         except GeminiUnavailableError as exc:
             logger.info("Gemini unavailable for insights, using fallback: %s", exc)
             insights = get_rule_based_insights(
-                result["ranked_categories"],  # type: ignore[arg-type]
-                result["breakdown"],  # type: ignore[arg-type]
+                cast(list[dict[str, Any]], result["ranked_categories"]),
+                cast(dict[str, float], result["breakdown"]),
             )
     else:
         insights = get_rule_based_insights(
-            result["ranked_categories"],  # type: ignore[arg-type]
-            result["breakdown"],  # type: ignore[arg-type]
+            cast(list[dict[str, Any]], result["ranked_categories"]),
+            cast(dict[str, float], result["breakdown"]),
         )
 
     return InsightsResponse(

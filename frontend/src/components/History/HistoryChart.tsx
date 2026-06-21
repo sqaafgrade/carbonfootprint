@@ -42,11 +42,11 @@ export const HistoryChart: React.FC<HistoryChartProps> = ({ entries }) => {
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
             <XAxis
               dataKey="date"
-              stroke="#94a3b8"
+              stroke="#cbd5e1"
               tick={{ fontSize: 12 }}
             />
             <YAxis
-              stroke="#94a3b8"
+              stroke="#cbd5e1"
               tick={{ fontSize: 12 }}
               tickFormatter={(v: number) => `${v} kg`}
             />

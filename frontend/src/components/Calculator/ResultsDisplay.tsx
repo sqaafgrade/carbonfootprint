@@ -25,13 +25,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
     >
       {/* Total emissions hero */}
       <div className="rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 text-center backdrop-blur">
-        <p className="mb-2 text-sm font-medium uppercase tracking-wider text-slate-400">
+        <p className="mb-2 text-sm font-medium uppercase tracking-wider text-slate-300">
           Your Annual Carbon Footprint
         </p>
         <p className="text-5xl font-extrabold text-white" id="total-emissions">
           {formatKg(result.total_kg)}
         </p>
-        <p className="mt-1 text-sm text-slate-500">CO₂ equivalent per year</p>
+        <p className="mt-1 text-sm text-slate-300">CO₂ equivalent per year</p>
       </div>
 
       {/* Comparison cards */}
@@ -44,7 +44,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
           }`}
           id="vs-global"
         >
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-400">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-300">
             vs Global Average
           </p>
           <p
@@ -54,7 +54,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
           >
             {formatPercentage(result.vs_global_average_pct)}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-300">
             {isAboveGlobal ? 'Above' : 'Below'} the 4,000 kg global average
           </p>
         </div>
@@ -67,7 +67,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
           }`}
           id="vs-paris"
         >
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-400">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-300">
             vs Paris Target
           </p>
           <p
@@ -77,7 +77,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
           >
             {formatPercentage(result.vs_paris_target_pct)}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-300">
             {isAboveParis ? 'Above' : 'Below'} the 2,000 kg Paris target
           </p>
         </div>
@@ -106,7 +106,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
                   <span className="font-medium capitalize text-slate-300">
                     {cat.category}
                   </span>
-                  <span className="text-slate-400">
+                  <span className="text-slate-300">
                     {formatKg(cat.kg)} ({pct.toFixed(1)}%)
                   </span>
                 </div>

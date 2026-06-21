@@ -14,7 +14,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ entries }) => {
   if (entries.length === 0) {
     return (
       <div className="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-8 text-center backdrop-blur">
-        <p className="text-slate-400">
+        <p className="text-slate-300">
           No history yet. Calculate your first footprint to get started!
         </p>
       </div>
@@ -60,10 +60,10 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ entries }) => {
               <td className="px-6 py-4 font-medium text-white">
                 {formatKg(entry.total_kg)}
               </td>
-              <td className="hidden px-6 py-4 text-slate-400 sm:table-cell">
+              <td className="hidden px-6 py-4 text-slate-300 sm:table-cell">
                 {formatKg(entry.breakdown?.transport ?? 0)}
               </td>
-              <td className="hidden px-6 py-4 text-slate-400 md:table-cell">
+              <td className="hidden px-6 py-4 text-slate-300 md:table-cell">
                 {formatKg(entry.breakdown?.home ?? 0)}
               </td>
               <td className="hidden px-6 py-4 lg:table-cell">
@@ -71,7 +71,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ entries }) => {
                   className={`rounded-full px-2 py-0.5 text-xs ${
                     entry.insights_source === 'gemini'
                       ? 'bg-blue-500/20 text-blue-300'
-                      : 'bg-slate-700 text-slate-400'
+                      : 'bg-slate-700 text-slate-200'
                   }`}
                 >
                   {entry.insights_source}

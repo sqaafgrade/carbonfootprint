@@ -76,7 +76,7 @@ const App: React.FC = () => {
                 Reduce
               </span>
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-slate-400">
+            <p className="mx-auto max-w-2xl text-lg text-slate-300">
               Calculate your annual carbon footprint, get AI-powered reduction
               insights, and track your progress toward a sustainable future.
             </p>
@@ -111,10 +111,10 @@ const App: React.FC = () => {
                     <div className="mb-4 text-6xl" aria-hidden="true">
                       🌱
                     </div>
-                    <p className="text-lg font-medium text-slate-400">
+                    <p className="text-lg font-medium text-slate-300">
                       Fill in the form to see your results
                     </p>
-                    <p className="mt-2 text-sm text-slate-500">
+                    <p className="mt-2 text-sm text-slate-400">
                       Your carbon footprint will appear here
                     </p>
                   </div>
@@ -150,11 +150,11 @@ const App: React.FC = () => {
         {/* Footer */}
         <footer className="border-t border-slate-700/50 bg-slate-900/80 py-8 backdrop-blur-lg">
           <div className="mx-auto max-w-6xl px-6 text-center">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-300">
               Carbon Footprint Awareness Platform — Built with 💚 for a
               sustainable future
             </p>
-            <p className="mt-1 text-xs text-slate-600">
+            <p className="mt-1 text-xs text-slate-400">
               Emission factors sourced from DEFRA 2023, US EPA, ICAO, Our World
               in Data, and IPCC AR6
             </p>

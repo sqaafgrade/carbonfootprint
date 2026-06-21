@@ -37,7 +37,7 @@ export const InsightsList: React.FC<InsightsListProps> = ({
           className={`rounded-full px-3 py-1 text-xs font-medium ${
             source === 'gemini'
               ? 'bg-blue-500/20 text-blue-300'
-              : 'bg-slate-700 text-slate-400'
+              : 'bg-slate-700 text-slate-200'
           }`}
         >
           {source === 'gemini' ? '✨ AI-Powered' : '📊 Rule-Based'}

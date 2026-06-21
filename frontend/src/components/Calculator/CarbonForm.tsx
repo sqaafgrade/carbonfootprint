@@ -80,7 +80,7 @@ export const CarbonForm: React.FC = () => {
               </option>
             ))}
           </select>
-          <p id="transport-mode-hint" className="mt-1 text-xs text-slate-500">
+          <p id="transport-mode-hint" className="mt-1 text-xs text-slate-400">
             Select your most-used transport method
           </p>
         </div>
@@ -104,7 +104,7 @@ export const CarbonForm: React.FC = () => {
               className="w-full rounded-xl border border-slate-600/50 bg-slate-800/50 px-4 py-3 text-white backdrop-blur transition-colors focus:border-carbon-500 focus:outline-none"
               aria-describedby="distance-hint"
             />
-            <p id="distance-hint" className="mt-1 text-xs text-slate-500">
+            <p id="distance-hint" className="mt-1 text-xs text-slate-400">
               0 – 100,000 km
             </p>
           </div>
@@ -127,7 +127,7 @@ export const CarbonForm: React.FC = () => {
               className="w-full rounded-xl border border-slate-600/50 bg-slate-800/50 px-4 py-3 text-white backdrop-blur transition-colors focus:border-carbon-500 focus:outline-none"
               aria-describedby="trips-hint"
             />
-            <p id="trips-hint" className="mt-1 text-xs text-slate-500">
+            <p id="trips-hint" className="mt-1 text-xs text-slate-400">
               0 – 1,000 trips
             </p>
           </div>
@@ -162,7 +162,7 @@ export const CarbonForm: React.FC = () => {
               className="w-full rounded-xl border border-slate-600/50 bg-slate-800/50 px-4 py-3 text-white backdrop-blur transition-colors focus:border-carbon-500 focus:outline-none"
               aria-describedby="electricity-hint"
             />
-            <p id="electricity-hint" className="mt-1 text-xs text-slate-500">
+            <p id="electricity-hint" className="mt-1 text-xs text-slate-400">
               0 – 10,000 kWh/month
             </p>
           </div>
@@ -185,7 +185,7 @@ export const CarbonForm: React.FC = () => {
               className="w-full rounded-xl border border-slate-600/50 bg-slate-800/50 px-4 py-3 text-white backdrop-blur transition-colors focus:border-carbon-500 focus:outline-none"
               aria-describedby="gas-hint"
             />
-            <p id="gas-hint" className="mt-1 text-xs text-slate-500">
+            <p id="gas-hint" className="mt-1 text-xs text-slate-400">
               0 – 10,000 kWh/month
             </p>
           </div>
@@ -258,7 +258,7 @@ export const CarbonForm: React.FC = () => {
               </option>
             ))}
           </select>
-          <p id="consumption-hint" className="mt-1 text-xs text-slate-500">
+          <p id="consumption-hint" className="mt-1 text-xs text-slate-400">
             Shopping, electronics, clothing, etc.
           </p>
         </div>
