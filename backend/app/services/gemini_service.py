@@ -148,7 +148,7 @@ async def get_gemini_insights(
             text_content = response.text
         elif hasattr(response, "__iter__") and not isinstance(response, (str, bytes)):
             text_content = "".join(
-                chunk.text for chunk in response if hasattr(chunk, "text")
+                chunk.text for chunk in cast(Any, response) if hasattr(chunk, "text")
             )
         else:
             raise GeminiUnavailableError("Unsupported Gemini response type")
