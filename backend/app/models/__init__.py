@@ -1,0 +1,1 @@
+# Models subpackage — Pydantic v2 schemas for API request/response validation.

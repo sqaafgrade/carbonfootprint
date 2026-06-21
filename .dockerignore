@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+
+# Documentation
+docs/
+*.md
+
+# Dev configs
+.pre-commit-config.yaml
+.editorconfig
+.prettierrc
+Makefile
+
+# Python
+__pycache__
+*.pyc
+.mypy_cache
+.ruff_cache
+.pytest_cache
+htmlcov/
+.coverage
+*.egg-info
+
+# Node
+frontend/node_modules
+frontend/.vite
+frontend/coverage
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker
+.dockerignore

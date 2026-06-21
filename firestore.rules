@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Carbon entries — scoped to device_id
+    match /carbon_entries/{entryId} {
+      // Allow read only if the requester's device_id matches
+      allow read: if request.auth == null
+        && resource.data.device_id == request.query.get('device_id', '');
+
+      // Allow create — the backend handles validation
+      allow create: if true;
+
+      // Deny update and delete — entries are immutable
+      allow update, delete: if false;
+    }
+
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

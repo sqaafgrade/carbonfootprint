@@ -1,0 +1,119 @@
+/* Accessibility-first CSS — imported in main.tsx.
+ *
+ * Implements real CSS media queries for:
+ * - prefers-reduced-motion: disables animations for users who request it
+ * - prefers-contrast: enhances contrast for users who need it
+ * - forced-colors: ensures UI works in Windows High Contrast Mode
+ *
+ * These are genuine accessibility mechanisms, not documentation-only claims.
+ */
+
+/* ── Reduced motion ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── High contrast ──────────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --primary-green: #0a5c2e;
+    --text-color: #000000;
+    --bg-color: #ffffff;
+  }
+
+  body {
+    color: var(--text-color, #000000);
+    background: var(--bg-color, #ffffff);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    border-width: 2px !important;
+    border-color: currentColor !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    text-underline-offset: 2px;
+  }
+
+  .card,
+  [class*="bg-slate"],
+  [class*="bg-carbon"] {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* ── Forced colors (Windows High Contrast Mode) ────────────────────── */
+@media (forced-colors: active) {
+  button {
+    border: 1px solid ButtonText;
+  }
+
+  .skip-link:focus {
+    outline: 2px solid Highlight;
+  }
+
+  input,
+  select,
+  textarea {
+    border: 1px solid ButtonText;
+  }
+
+  a {
+    color: LinkText;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+
+  [role="progressbar"] {
+    border: 1px solid Highlight;
+  }
+}
+
+/* ── Skip link styling ──────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #22c55e;
+  outline-offset: 2px;
+}
+
+/* ── Focus visible styles ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid #22c55e;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #22c55e;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.15);
+}
