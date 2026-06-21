@@ -11,7 +11,7 @@ respx==0.21.1
 # Linting & formatting
 ruff==0.8.4
 mypy==1.14.1
-bandit==1.8.2
+bandit==1.9.4
 
 # Security audit
 pip-audit==2.7.3
