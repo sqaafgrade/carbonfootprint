@@ -6,7 +6,7 @@ even when the underlying client throws exceptions.
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.services.bigquery_service import log_calculation_event
 from app.services.pubsub_service import publish_calculation_event
@@ -132,3 +132,130 @@ class TestPubSubServiceNeverRaises:
                 total_kg=5000.0,
                 breakdown={},
             )
+
+
+class TestFirestoreServiceNeverRaises:
+    """Firestore service must never propagate exceptions and handle disabled states."""
+
+    async def test_save_entry_disabled(self) -> None:
+        """Should skip saving if Firestore is disabled."""
+        from app.services.firestore_service import save_entry
+
+        with patch("app.services.firestore_service.get_settings") as mock_settings:
+            mock_settings.return_value.use_firestore = False
+            result = await save_entry("test-001", {"total_kg": 50.0})
+            assert result is None
+
+    async def test_save_entry_success(self) -> None:
+        """Should return document ID on successful save."""
+        from app.services.firestore_service import save_entry
+
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_ref = MagicMock()
+        mock_ref.id = "mock-doc-id"
+        mock_collection.add = AsyncMock(return_value=(None, mock_ref))
+        mock_client.collection.return_value = mock_collection
+
+        with (
+            patch("app.services.firestore_service._get_client", return_value=mock_client),
+            patch("app.services.firestore_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.use_firestore = True
+            mock_settings.return_value.firestore_collection = "test_collection"
+
+            result = await save_entry("device-123", {"total_kg": 120.5, "source": "gemini"})
+            assert result == "mock-doc-id"
+            mock_collection.add.assert_called_once()
+
+    async def test_save_entry_exception_caught(self) -> None:
+        """Should log warning and return None on save failure."""
+        from app.services.firestore_service import save_entry
+
+        mock_client = MagicMock()
+        mock_client.collection.side_effect = RuntimeError("Firestore connection lost")
+
+        with (
+            patch("app.services.firestore_service._get_client", return_value=mock_client),
+            patch("app.services.firestore_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.use_firestore = True
+            mock_settings.return_value.firestore_collection = "test_collection"
+
+            result = await save_entry("device-123", {"total_kg": 120.5})
+            assert result is None
+
+    async def test_get_entries_disabled(self) -> None:
+        """Should return empty list if Firestore is disabled."""
+        from app.services.firestore_service import get_entries
+
+        with patch("app.services.firestore_service.get_settings") as mock_settings:
+            mock_settings.return_value.use_firestore = False
+            result = await get_entries("test-001")
+            assert result == []
+
+    async def test_get_entries_success(self) -> None:
+        """Should stream documents and convert timestamps to ISO strings."""
+        from app.services.firestore_service import get_entries
+        from datetime import datetime, UTC
+
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_query = MagicMock()
+        mock_client.collection.return_value = mock_collection
+        mock_collection.where.return_value.order_by.return_value.limit.return_value = mock_query
+
+        # Mock query.stream() async generator
+        class AsyncMockIterator:
+            def __init__(self, items):
+                self.items = items
+                self.index = 0
+
+            def __aiter__(self):
+                return self
+
+            async def __anext__(self):
+                if self.index >= len(self.items):
+                    raise StopAsyncIteration
+                item = self.items[self.index]
+                self.index += 1
+                return item
+
+        mock_doc = MagicMock()
+        mock_doc.id = "doc-id-1"
+        mock_doc.to_dict.return_value = {
+            "device_id": "test-001",
+            "total_kg": 500.0,
+            "created_at": datetime(2026, 6, 21, 12, 0, 0, tzinfo=UTC)
+        }
+        mock_query.stream.return_value = AsyncMockIterator([mock_doc])
+
+        with (
+            patch("app.services.firestore_service._get_client", return_value=mock_client),
+            patch("app.services.firestore_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.use_firestore = True
+            mock_settings.return_value.firestore_collection = "test_collection"
+
+            entries = await get_entries("test-001")
+            assert len(entries) == 1
+            assert entries[0]["id"] == "doc-id-1"
+            assert entries[0]["created_at"] == "2026-06-21T12:00:00+00:00"
+
+    async def test_get_entries_exception_caught(self) -> None:
+        """Should log warning and return empty list on get failure."""
+        from app.services.firestore_service import get_entries
+
+        mock_client = MagicMock()
+        mock_client.collection.side_effect = RuntimeError("Firestore read error")
+
+        with (
+            patch("app.services.firestore_service._get_client", return_value=mock_client),
+            patch("app.services.firestore_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.use_firestore = True
+            mock_settings.return_value.firestore_collection = "test_collection"
+
+            entries = await get_entries("test-001")
+            assert entries == []
+
