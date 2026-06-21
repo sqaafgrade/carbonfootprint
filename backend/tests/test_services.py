@@ -75,6 +75,42 @@ class TestBigQueryServiceNeverRaises:
                 source="rules",
             )
 
+    def test_bigquery_get_client(self) -> None:
+        """Should initialize BigQuery Client with configured project_id."""
+        import app.services.bigquery_service as svc
+        svc._client = None
+        with (
+            patch("app.services.bigquery_service.bigquery.Client") as mock_client_cls,
+            patch("app.services.bigquery_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.project_id = "test-bq-proj"
+            client = svc._get_client()
+            mock_client_cls.assert_called_once_with(project="test-bq-proj")
+            assert client == mock_client_cls.return_value
+
+    async def test_bigquery_logs_insert_errors(self) -> None:
+        """Should log warning if BigQuery response contains errors."""
+        mock_client = MagicMock()
+        mock_client.insert_rows_json.return_value = [{"error": "some bigquery issue"}]
+        with (
+            patch("app.services.bigquery_service._get_client", return_value=mock_client),
+            patch("app.services.bigquery_service.get_settings") as mock_settings,
+            patch("app.services.bigquery_service.logger.warning") as mock_warn,
+        ):
+            mock_settings.return_value.use_bigquery = True
+            mock_settings.return_value.project_id = "test"
+            mock_settings.return_value.bigquery_dataset = "ds"
+            mock_settings.return_value.bigquery_table = "tbl"
+            await log_calculation_event(
+                device_id="test-001",
+                total_kg=50.0,
+                breakdown={},
+                source="rules",
+            )
+            mock_warn.assert_called_once()
+            assert "BigQuery insert errors" in mock_warn.call_args[0][0]
+
+
 
 class TestPubSubServiceNeverRaises:
     """Pub/Sub service must never propagate exceptions."""
@@ -132,6 +168,17 @@ class TestPubSubServiceNeverRaises:
                 total_kg=5000.0,
                 breakdown={},
             )
+
+    def test_pubsub_get_publisher(self) -> None:
+        """Should initialize Pub/Sub PublisherClient."""
+        import app.services.pubsub_service as svc
+        svc._publisher = None
+        with (
+            patch("app.services.pubsub_service.pubsub_v1.PublisherClient") as mock_publisher_cls,
+        ):
+            publisher = svc._get_publisher()
+            mock_publisher_cls.assert_called_once()
+            assert publisher == mock_publisher_cls.return_value
 
 
 class TestFirestoreServiceNeverRaises:
@@ -259,3 +306,17 @@ class TestFirestoreServiceNeverRaises:
 
             entries = await get_entries("test-001")
             assert entries == []
+
+    def test_firestore_get_client(self) -> None:
+        """Should initialize Firestore AsyncClient with configured project_id."""
+        import app.services.firestore_service as svc
+        svc._client = None
+        with (
+            patch("app.services.firestore_service.firestore.AsyncClient") as mock_client_cls,
+            patch("app.services.firestore_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.project_id = "test-fs-proj"
+            client = svc._get_client()
+            mock_client_cls.assert_called_once_with(project="test-fs-proj")
+            assert client == mock_client_cls.return_value
+

@@ -7,7 +7,7 @@ This document outlines the technical security controls implemented in the Carbon
 ## 1. Security Headers Middleware
 All HTTP responses from the backend API are intercepted by middleware configured in [security.py](file:///d:/carboonramesh/carbon-platform/backend/app/core/security.py) to inject strict security headers:
 
-* **Content Security Policy (CSP)**: `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';` (blocks cross-site scripting and unauthorized iframe framing).
+* **Content Security Policy (CSP)**: `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'` (blocks cross-site scripting and unauthorized iframe framing).
 * **HTTP Strict Transport Security (HSTS)**: `max-age=63072000; includeSubDomains; preload` (enforces HTTPS browser-wide for 2 years).
 * **X-Content-Type-Options**: `nosniff` (prevents MIME sniffing).
 * **X-Frame-Options**: `DENY` (prevents clickjacking attacks).

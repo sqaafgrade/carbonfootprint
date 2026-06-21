@@ -57,5 +57,5 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Cached singleton settings instance."""
+    """Get the cached singleton settings instance."""
     return Settings()

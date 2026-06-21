@@ -16,7 +16,7 @@ import asyncio
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
+from typing import Any, cast
 
 import vertexai
 from vertexai.generative_models import GenerativeModel
@@ -103,16 +103,15 @@ def _parse_gemini_response(text: str) -> list[dict[str, str]]:
     if not isinstance(parsed, list) or len(parsed) < 1:
         raise GeminiUnavailableError("Gemini returned empty or non-list response")
 
-    validated: list[dict[str, str]] = []
-    for item in parsed[:3]:
-        if isinstance(item, dict) and "category" in item and "tip" in item:
-            validated.append(
-                {
-                    "category": str(item.get("category", "general")),
-                    "tip": str(item.get("tip", "")),
-                    "severity": str(item.get("severity", "medium")),
-                }
-            )
+    validated: list[dict[str, str]] = [
+        {
+            "category": str(item.get("category", "general")),
+            "tip": str(item.get("tip", "")),
+            "severity": str(item.get("severity", "medium")),
+        }
+        for item in parsed[:3]
+        if isinstance(item, dict) and "category" in item and "tip" in item
+    ]
 
     if not validated:
         raise GeminiUnavailableError("Gemini response had no valid insight objects")
@@ -145,7 +144,15 @@ async def get_gemini_insights(
             loop.run_in_executor(_executor, model.generate_content, prompt),
             timeout=settings.gemini_timeout_seconds,
         )
-        return _parse_gemini_response(response.text)
+        if hasattr(response, "text"):
+            text_content = response.text
+        elif hasattr(response, "__iter__") and not isinstance(response, (str, bytes)):
+            text_content = "".join(
+                chunk.text for chunk in response if hasattr(chunk, "text")
+            )
+        else:
+            raise GeminiUnavailableError("Unsupported Gemini response type")
+        return _parse_gemini_response(text_content)
     except GeminiUnavailableError:
         raise
     except TimeoutError as exc:

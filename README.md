@@ -74,12 +74,12 @@ gcloud pubsub topics create carbon-insights --project=carbonfootprint-sakshi
 ### 3. Create BigQuery Dataset and Table
 Create the dataset:
 ```bash
-bq mk --location=us-central1 carbon_analytics
+bq mk --dataset --location=US carbonfootprint-sakshi:carbon_analytics
 ```
 Create the events table using schema matching backend expectations:
 ```bash
 bq mk --table carbonfootprint-sakshi:carbon_analytics.carbon_events \
-  device_id:STRING,total_kg:FLOAT,timestamp:TIMESTAMP,breakdown:JSON,source:STRING
+  device_id:STRING,total_kg:FLOAT64,transport_kg:FLOAT64,home_kg:FLOAT64,diet_kg:FLOAT64,consumption_kg:FLOAT64,insights_source:STRING,event_timestamp:TIMESTAMP
 ```
 
 ### 4. Deploy to Google Cloud Run

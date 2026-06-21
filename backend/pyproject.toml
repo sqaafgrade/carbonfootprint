@@ -13,11 +13,47 @@ line-length = 100
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "PLC", "PLW", "B", "C4", "SIM"]
-ignore = ["E501"]
+select = ["ALL"]
+ignore = [
+    "E501",    # Line length check is handled by ruff format / wrapping manually
+    "BLE001",  # Blind Exception catching is intentional in the service layers
+    "TRY300",  # Return statements inside try-except block are cleaner for local variables
+    "TRY003",  # Specifying error messages directly in custom exceptions is clear and concise
+    "EM101",   # Using string literals directly in exceptions is simpler and standard
+    "EM102",   # Using f-strings directly in exceptions is simpler and standard
+    "COM812",  # Trailing commas are handled automatically by ruff format
+    "D100",    # Module-level docstrings not strictly required for __init__.py files
+    "D104",    # Package-level docstrings not strictly required
+    "D107",    # Docstring for __init__ is redundant when the class has a docstring
+    "ANN204",  # Special methods like __init__ do not need return type annotations
+    "D203",    # Conflicts with D211 (one-blank-line-before-class vs no-blank-line-before-class)
+    "D213",    # Conflicts with D212 (multi-line docstring summary)
+    "D413",    # Blank line after docstring last section is stylistic and optional
+    "ISC001",  # Implicit string concatenation is handled by the formatter
+    "TC",      # Type-checking blocks conflict with FastAPI/Pydantic runtime type evaluation
+    "FAST",    # FastAPI stylistic rules like response_model checking
+    "ARG",     # Unused arguments are required for slowapi rate limiter decorators
+    "RUF001",  # Allow en-dash and standard punctuation in user-facing descriptions
+    "RUF002",  # Allow standard unicode symbols in docstrings
+    "RUF003",  # Allow standard unicode symbols in comments
+    "PLR2004", # Magic values are standard for comparisons in tests and calculations
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101"]
+"tests/**" = [
+    "S101",    # Asserts are standard in tests
+    "SLF001",  # Accessing private members is necessary in tests for setup/assertion
+    "ANN001",  # Type annotations are not strictly required for test parameters
+    "ANN201",  # Type annotations are not strictly required for test return values
+    "ANN202",  # Type annotations are not strictly required for private test functions
+    "ANN002",  # Missing type annotation for *args
+    "ANN003",  # Missing type annotation for **kwargs
+    "ARG001",  # Unused arguments in tests/mocks are common
+    "D",       # Docstring checks are not required for test files
+    "TC",      # Type-checking block imports are not required in tests
+    "PT",      # Pytest fixture style is a minor preference
+    "RUF002",  # Allow custom symbols/characters in docstrings
+]
 
 [tool.mypy]
 python_version = "3.11"

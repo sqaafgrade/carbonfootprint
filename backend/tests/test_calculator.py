@@ -247,3 +247,29 @@ class TestRuleBasedInsights:
         non_general = [i for i in insights if i["category"] != "general"]
         categories = [i["category"] for i in non_general]
         assert len(categories) == len(set(categories))
+
+    def test_unknown_category_skipped(self) -> None:
+        """Unrecognized categories should be skipped in rule-based insights."""
+        ranked = [{"category": "unknown_category", "kg": 5000.0}]
+        breakdown = {"unknown_category": 5000.0}
+        insights = get_rule_based_insights(ranked, breakdown)
+        # Should skip "unknown_category" and fallback to general insights
+        assert len(insights) == 3
+        for insight in insights:
+            assert insight["category"] == "general"
+
+
+def test_invalid_transport_mode_returns_zero() -> None:
+    """Invalid transport mode should bypass factors dict and return 0.0."""
+    inputs = {
+        "transport_mode": "invalid_mode",  # type: ignore[dict-item]
+        "distance_km": 100.0,
+        "trips_per_year": 10,
+        "electricity_kwh": 0,
+        "gas_kwh": 0,
+        "diet_type": "vegan",
+        "consumption_level": "low",
+    }
+    result = calculate_footprint(inputs)
+    assert result["breakdown"]["transport"] == 0.0
+

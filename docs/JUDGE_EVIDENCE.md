@@ -32,25 +32,25 @@ Calculation logic conforms to the following carbon coefficients in [factors.py](
 
 ## 2. Test Execution Verification
 
-### Backend Pytest Output (91 passed, 91.25% coverage)
+### Backend Pytest Output (109 passed, 100.00% coverage)
 ```bash
 rootdir: D:\carboonramesh\carbon-platform\backend
-collected 91 items
+collected 109 items
 
-tests\test_calculator.py ................                                [ 17%]
-tests\test_gemini_fallback.py .........                                  [ 27%]
-tests\test_routes.py ...........                                         [ 39%]
-tests\test_safety.py ..................                                  [ 59%]
-tests\test_services.py ............                                      [ 72%]
+tests\test_calculator.py ..................                              [ 16%]
+tests\test_gemini_fallback.py .............                              [ 28%]
+tests\test_routes.py ..................                                  [ 44%]
+tests\test_safety.py ..................                                  [ 61%]
+tests\test_services.py ................                                  [ 76%]
 tests\test_validation.py .........................                       [100%]
 
 ---------- coverage: platform win32, python 3.11.8-final-0 -----------
 Name                                Stmts   Miss  Cover   Missing
 -----------------------------------------------------------------
-TOTAL                                 480     42    91%
+TOTAL                                 486      0   100%
 
-Required test coverage of 90.0% reached. Total coverage: 91.25%
-============================= 91 passed in 0.94s ==============================
+Required test coverage of 90.0% reached. Total coverage: 100.00%
+======================= 109 passed, 2 warnings in 1.31s =======================
 ```
 
 ### Frontend Vitest Output (41 passed, ~94% coverage)
@@ -58,19 +58,18 @@ Required test coverage of 90.0% reached. Total coverage: 91.25%
  RUN  v2.1.9 D:/carboonramesh/carbon-platform/frontend
       Coverage enabled with v8
 
- ✓ tests/api.test.ts (5 tests) 23ms
- ✓ tests/validators.test.ts (4 tests) 13ms
- ✓ tests/storeAndHooks.test.tsx (6 tests) 85ms
- ✓ tests/ResultsDisplay.test.tsx (7 tests) 223ms
- ✓ tests/CarbonForm.test.tsx (7 tests) 324ms
- ✓ tests/accessibility.test.tsx (5 tests) 500ms
-   ✓ Accessibility (axe-core) > CarbonForm has no accessibility violations 319ms
- ✓ tests/components.test.tsx (7 tests) 179ms
+ ✓ tests/api.test.ts (5 tests) 16ms
+ ✓ tests/validators.test.ts (4 tests) 11ms
+ ✓ tests/storeAndHooks.test.tsx (6 tests) 52ms
+ ✓ tests/ResultsDisplay.test.tsx (7 tests) 178ms
+ ✓ tests/CarbonForm.test.tsx (7 tests) 291ms
+ ✓ tests/accessibility.test.tsx (5 tests) 488ms
+ ✓ tests/components.test.tsx (7 tests) 182ms
 
  Test Files  7 passed (7)
       Tests  41 passed (41)
-   Start at  16:01:40
-   Duration  4.43s
+   Start at  19:21:40
+   Duration  5.39s
 
  % Coverage report from v8
 -------------------|---------|----------|---------|---------|-------------------

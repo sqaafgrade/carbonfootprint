@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["calculate"])
 
+_BACKGROUND_TASKS: set[asyncio.Task[None]] = set()
+
 
 @router.post(
     "/calculate",
@@ -71,7 +73,7 @@ async def calculate(request: Request, data: CarbonInput) -> CarbonResult:
 
     # Fire-and-forget async tasks for analytics (never block the response)
     breakdown = result["breakdown"]
-    asyncio.create_task(
+    task1 = asyncio.create_task(
         log_calculation_event(
             device_id=data.device_id,
             total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
@@ -79,12 +81,17 @@ async def calculate(request: Request, data: CarbonInput) -> CarbonResult:
             source=source,
         )
     )
-    asyncio.create_task(
+    _BACKGROUND_TASKS.add(task1)
+    task1.add_done_callback(_BACKGROUND_TASKS.discard)
+
+    task2 = asyncio.create_task(
         publish_calculation_event(
             device_id=data.device_id,
             total_kg=float(result["total_kg"]),  # type: ignore[arg-type]
             breakdown=breakdown,  # type: ignore[arg-type]
         )
     )
+    _BACKGROUND_TASKS.add(task2)
+    task2.add_done_callback(_BACKGROUND_TASKS.discard)
 
     return CarbonResult(**result)  # type: ignore[arg-type]

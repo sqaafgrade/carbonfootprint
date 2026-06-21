@@ -26,12 +26,11 @@ def redact_pii(text: str) -> str:
     """
     text = EMAIL_PATTERN.sub("[EMAIL_REDACTED]", text)
     text = PHONE_PATTERN.sub("[PHONE_REDACTED]", text)
-    text = SSN_PATTERN.sub("[SSN_REDACTED]", text)
-    return text
+    return SSN_PATTERN.sub("[SSN_REDACTED]", text)
 
 
 def sanitize_for_prompt(value: str, max_length: int = 200) -> str:
-    """Defensive sanitization before any value is interpolated into an LLM prompt.
+    r"""Defensive sanitization before any value is interpolated into an LLM prompt.
 
     1. Strips control characters (0x00–0x1f, 0x7f) to prevent prompt injection
        via invisible characters.
@@ -40,7 +39,7 @@ def sanitize_for_prompt(value: str, max_length: int = 200) -> str:
 
     >>> sanitize_for_prompt("normal input")
     'normal input'
-    >>> sanitize_for_prompt("has\\x00null\\x1fchars")
+    >>> sanitize_for_prompt("has\x00null\x1fchars")
     'hasnullchars'
     >>> len(sanitize_for_prompt("a" * 500, max_length=200))
     200

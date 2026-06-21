@@ -65,6 +65,11 @@ class TestParseGeminiResponse:
         result = _parse_gemini_response(text)
         assert len(result) == 3
 
+    def test_no_valid_insights_raises(self) -> None:
+        """Should raise GeminiUnavailableError if no valid insight objects could be parsed."""
+        with pytest.raises(GeminiUnavailableError, match="no valid insight"):
+            _parse_gemini_response('[{"wrong_key": "val"}]')
+
 
 class TestGeminiFallback:
     """Tests for the 3 distinct failure modes."""
@@ -141,3 +146,62 @@ class TestGeminiFallback:
                     total_kg=1000.0,
                     device_id="test-device",
                 )
+
+    async def test_iterable_chunks_response(self) -> None:
+        """Should support response that is an iterable of chunks."""
+        mock_chunk = MagicMock()
+        mock_chunk.text = '[{"category": "transport", "tip": "Ride a bike", "severity": "high"}]'
+        mock_model = MagicMock()
+        mock_model.generate_content.return_value = [mock_chunk]
+
+        with (
+            patch("app.services.gemini_service._get_model", return_value=mock_model),
+            patch("app.services.gemini_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.gemini_timeout_seconds = 5.0
+            mock_settings.return_value.project_id = "test"
+            mock_settings.return_value.region = "us-central1"
+            insights = await get_gemini_insights(
+                breakdown={"transport": 1000.0},
+                total_kg=1000.0,
+                device_id="test-device",
+            )
+            assert len(insights) == 1
+            assert insights[0]["category"] == "transport"
+
+    async def test_unsupported_response_type_raises_unavailable(self) -> None:
+        """Should raise GeminiUnavailableError for unsupported response type."""
+        mock_model = MagicMock()
+        mock_model.generate_content.return_value = 123
+
+        with (
+            patch("app.services.gemini_service._get_model", return_value=mock_model),
+            patch("app.services.gemini_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.gemini_timeout_seconds = 5.0
+            mock_settings.return_value.project_id = "test"
+            mock_settings.return_value.region = "us-central1"
+            with pytest.raises(GeminiUnavailableError, match="Unsupported Gemini response type"):
+                await get_gemini_insights(
+                    breakdown={"transport": 1000.0},
+                    total_kg=1000.0,
+                    device_id="test-device",
+                )
+
+    def test_get_model_initialization(self) -> None:
+        """Should call vertexai.init and GenerativeModel constructor on first lazy get."""
+        import app.services.gemini_service as svc
+        svc._model_instance = None
+        with (
+            patch("app.services.gemini_service.vertexai.init") as mock_init,
+            patch("app.services.gemini_service.GenerativeModel") as mock_model_class,
+            patch("app.services.gemini_service.get_settings") as mock_settings,
+        ):
+            mock_settings.return_value.project_id = "test-project"
+            mock_settings.return_value.region = "us-central1"
+            mock_settings.return_value.gemini_model = "gemini-1.5-flash"
+            model = svc._get_model()
+            mock_init.assert_called_once_with(project="test-project", location="us-central1")
+            mock_model_class.assert_called_once_with("gemini-1.5-flash")
+            assert model == mock_model_class.return_value
+

@@ -43,5 +43,4 @@ async def list_entries(
     ),
 ) -> list[dict[str, Any]]:
     """Retrieve historical carbon footprint entries for a device."""
-    entries = await get_entries(device_id=device_id, limit=limit)
-    return entries
+    return await get_entries(device_id=device_id, limit=limit)
